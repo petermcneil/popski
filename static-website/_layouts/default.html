@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<html>
     <head>
         <meta charset="UTF-8">
-        <title>Popski</title>
-        <link rel="stylesheet" type="text/css" href="{{ "/assets/style/style.css" | relative_url }}">
-        <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+        <title>{{ page.title }}</title>
+        <link rel="stylesheet" href="{{ "/assets/style/style.css" | relative_url }}" rel="preload" as="style">
+        <link rel="stylesheet" href="{{ "/assets/style/syntax.css" | relative_url }}" rel="preload" as="style">
     </head>
     <body>
-        <div class="page-content">
-            <div class="wrapper">
-            {{ content }}
-            </div>
-        </div>
-        {% include footer.html %}
+    {% include sidebar.html %}
+        {{ content }}
+    {% include footer.html %}
     </body>
-
-    <script src="{{ "/assets/scripts/function.js" | relative_url }}"></script>
 </html>

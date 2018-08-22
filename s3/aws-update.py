@@ -17,7 +17,6 @@ s3 = aws.resource('s3')
 
 config = configparser.ConfigParser()
 config.read('super_secrets.ini')
-
 popski = config['pop.ski']
 
 CLOUDFRONT_ID = popski["CLOUDFRONT_ID"]
@@ -66,7 +65,7 @@ def gzip_files():
                 file_path = os.path.join(root, filename)
 
                 tmp_path = "{temp_folder}{filepath}.gz".format(temp_folder=temp_folder,
-                                                            filepath=file_path.replace(website + "/", ""))
+                                                               filepath=file_path.replace(website + "/", ""))
                 os.makedirs(temp_folder + root.replace(website, ""), exist_ok=True)
                 with open(file_path, 'rb') as f_in:
                     with gzip.open(tmp_path, 'wb+') as f_out:

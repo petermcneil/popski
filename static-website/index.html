@@ -1,28 +1,21 @@
 ---
 layout: default
+title: Popski
 ---
-<div id="wrapper">
-    <div class="bar">
-        <div class="logo"><img src="assets/images/logo.svg" role="logo-bar"></div>
-        <div id="bar-profile"><p>Peter McNeil</p>
-            <p>Trainee Software Engineer, BBC News</p></div>
-        <div class="bar-item"><a href="/">Home</a></div>
-        <div class="bar-item"><a href="/portfolio/">Portfolio</a></div>
-        <div class="bar-item"><a href="/cv/">CV</a></div>
-        <div class="bar-item">
-            <a href="https://www.github.com/petermcneil"> <i class="fab fa-github-square"></i> </a>
-            <a href="https://www.linkedin.com/in/peter-mcneil"> <i class="fab fa-linkedin"></i> </a>
+<div class="main">
+        <header class="main">Popski</header>
+        <article class="main">
+            <section class="main">
+                Welcome! This is the updated text of my lovely website
+            </section>
+            <section class="main">
+                <ul>
+                    {% for post in site.posts %}
+                    <li>
+                        <a href="{{ post.url }}">{{ post.title }}</a>{{ post.excerpt }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </article>
         </div>
-    </div>
-    <div class="main" id="main">
-        <header id="main-header">Popski</header>
-        <div class="main-paragraph">
-            Welcome! This is the updated text of my lovely website
-        </div>
-    </div>
-    <div class="extras">
-        <div id="extras2"></div>
-    </div>
-</div>
-<script src="assets/scripts/function.js"></script>
-

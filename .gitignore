@@ -109,3 +109,7 @@ gradle-app.setting
 popski-env
 super_secrets.ini
 tmp/
+
+_site
+.sass-cache
+.jekyll-metadata

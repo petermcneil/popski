@@ -107,4 +107,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 popski-env
-S3/super_secrets.ini
+super_secrets.ini
+tmp/

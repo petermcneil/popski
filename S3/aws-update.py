@@ -3,7 +3,14 @@ import hashlib
 import os
 import time
 import configparser
+import gzip
+import shutil
 from time import gmtime, strftime
+import coloredlogs
+import logging
+
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='INFO', logger=logger)
 
 aws = boto3.session.Session(profile_name='popski')
 s3 = aws.resource('s3')
@@ -16,9 +23,9 @@ popski = config['pop.ski']
 CLOUDFRONT_ID = popski["CLOUDFRONT_ID"]
 main_bucket_name = popski["main_bucket_name"]
 backup_bucket_name = popski["backup_bucket_name"]
+temp_folder = popski["temp_folder"]
 
-hash_string = "HASH_STRING"
-excluded = [".DS_Store", "function.ts"]
+excluded = [".DS_Store", "function.ts", "feed.xml"]
 
 mime_type = {
     "html": "text/html",
@@ -36,7 +43,7 @@ def backup_website():
     backup_path = strftime("%Y-%m-%d/%H:%M:%S/", gmtime())
 
     for item in main_bucket.objects.all():
-        print("Backing up file: {}".format( item.key))
+        logger.info("Backing up file: {}".format(item.key))
         s3.meta.client.copy_object(
             ACL='public-read',
             Bucket=backup_bucket_name,
@@ -50,42 +57,58 @@ def find_content_type(path):
     return mime_type[ext]
 
 
-def load_to_s3():
-    main_bucket = s3.Bucket(main_bucket_name)
-
-    print("Deleting contents of the bucket {}".format(main_bucket_name))
-    main_bucket.objects.all().delete()
+def gzip_files():
+    os.makedirs(temp_folder, exist_ok=True)
 
     for root, subdirs, files in os.walk(website):
         for filename in files:
             if filename not in excluded:
                 file_path = os.path.join(root, filename)
 
-                if "_site/index.html" in file_path:
-                    key = "index-{}.html".format(hash_string)
-                else:
-                    key = file_path.replace(website, "").replace("/", "", 1)
+                tmp_path = "{temp_folder}{filepath}.gz".format(temp_folder=temp_folder,
+                                                            filepath=file_path.replace(website + "/", ""))
+                os.makedirs(temp_folder + root.replace(website, ""), exist_ok=True)
+                with open(file_path, 'rb') as f_in:
+                    with gzip.open(tmp_path, 'wb+') as f_out:
+                        logger.info("G-zipping file {} saving to with the path {}".format(file_path, tmp_path))
+                        shutil.copyfileobj(f_in, f_out)
 
-                print("Uploading file {}\t to s3 with the path {}".format(file_path, key))
+
+def load_to_s3():
+    main_bucket = s3.Bucket(main_bucket_name)
+
+    logger.info("Deleting contents of the bucket {}".format(main_bucket_name))
+    main_bucket.objects.all().delete()
+
+    for root, subdirs, files in os.walk(temp_folder):
+        for filename in files:
+            if filename not in excluded:
+                file_path = os.path.join(root, filename)
+
+                if "tmp/index.html.gz" in file_path:
+                    key = index_html
+                else:
+                    key = file_path.replace(temp_folder, "").replace(".gz", "")
+
+                logger.info("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
                 content_type = find_content_type(file_path)
-                main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data, ContentType=content_type, ACL="public-read")
+                main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data, ContentType=content_type, ContentEncoding="gzip", ACL="public-read")
 
 
 def invalidate_cloudfront():
-    print("Updating Cloudfront distribution with new index path")
+    logger.info("Updating Cloudfront distribution with new index path")
     client = aws.client("cloudfront")
-    config = client.get_distribution_config(Id=CLOUDFRONT_ID)
+    dist_config = client.get_distribution_config(Id=CLOUDFRONT_ID)
 
-    config["DistributionConfig"]["DefaultRootObject"] = "index-{}.html".format(hash_string)
+    dist_config["DistributionConfig"]["DefaultRootObject"] = index_html
 
-    dis_config = config["DistributionConfig"]
-    etag = config["ETag"]
+    dis_config = dist_config["DistributionConfig"]
+    etag = dist_config["ETag"]
     client.update_distribution(DistributionConfig=dis_config, Id=CLOUDFRONT_ID, IfMatch=etag)
 
 
 def md5(files):
-    global hash_string
     hash_string = hashlib.md5()
 
     for f in files:
@@ -96,12 +119,19 @@ def md5(files):
     hash_string.update(str(time.time()).encode("utf-8"))
     hash_string = hash_string.hexdigest()[0:10]
 
+    global index_html
+    index_html = "index-{}.html".format(hash_string)
+    logger.info("Setting index filename to {}".format(index_html))
+
 
 def main():
     backup_website()
     md5(["index.html"])
+    gzip_files()
     load_to_s3()
     invalidate_cloudfront()
+
+    shutil.rmtree(temp_folder)
 
 
 if __name__ == "__main__":

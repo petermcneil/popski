@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: jekyll update
-permalink: blog/hello_world
+permalink: blog/hello_world/
 ---
 Welcome! This is my inaugural post of my 
 

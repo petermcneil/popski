@@ -15,17 +15,6 @@ li {
     list-style: none;
 }
 
-img[role="profile"]{
-    width: 70%;
-    padding-top: 5%;
-    height: auto;
-}
-
-img[role="icon"]{
-    width: 20px;
-    height: auto;
-}
-
 /*
     Body Grid CSS
  */
@@ -129,17 +118,39 @@ body {
 .bar {
     grid-area: bar;
     text-align: center;
-
+    height: 60vh;
     display: grid;
+    grid-template-rows: 0.1fr 1fr 0.3fr;
+    grid-template-areas: "nav"
+                         "pic"
+                         "info";
 }
 
-.bar-item{
-}
 .bar-nav {
+    grid-area: nav;
     padding-top: 5%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
+}
+
+#bar-pic{
+    grid-area: pic;
+}
+
+#bar-info{
+    grid-area: info;
+}
+
+.bar-profile {
+    width: 70%;
+    padding-top: 5%;
+    height: auto;
+}
+
+.icon {
+    width: 20px;
+    height: auto;
 }
 
 /*

@@ -25,6 +25,7 @@ sass:
 
 plugins:
   - jekyll-minifier
+
 jekyll-minifier:
   compress_css: false
 

@@ -4,14 +4,20 @@
             <a href="/portfolio/">Portfolio</a>
             <a href="/cv/">CV</a>
         </nav>
-        <figure>
-            <img class="bar-item" src="{{ "/assets/images/my_face.jpeg" | relative_url }}" role="profile">
+        <figure id="bar-pic" class="bar-item">
+            <img class="bar-profile" src="{{ "/assets/images/my_face.jpeg" | relative_url }}" alt="Peter McNeil standing in the BBC" role="presentation">
         </figure>
-        <ul class="bar-item">
-            <li>Peter McNeil</li>
-            <li>Junior Software Engineer</li>
-            <li>BBC News</li>
-        </ul>
-        <a class="bar-item" href="https://www.github.com/petermcneil"><img src="{{ "/assets/images/github.svg" | relative_url }}" role="icon"></a>
-        <a class="bar-item" href="https://www.linkedin.com/in/peter-mcneil"><img src="{{ "/assets/images/linkedin.svg" | relative_url }}" role="icon"></a>
+        <div id="bar-info">
+            <ul class="bar-item">
+                <li>Peter McNeil</li>
+                <li>Junior Software Engineer</li>
+                <li>BBC News</li>
+            </ul>
+            <a class="bar-item" href="https://www.github.com/petermcneil">
+                <img class="icon" src="{{ "/assets/images/github.svg" | relative_url }}" alt="Github logo, click for Peter McNeils profile" role="presentation">
+            </a>
+            <a class="bar-item" href="https://www.linkedin.com/in/peter-mcneil">
+                <img class="icon" src="{{ "/assets/images/linkedin.svg" | relative_url }}" alt="Linkedin logo, click for Peter McNeils profile" role="presentation">
+            </a>
+        </div>
     </div>

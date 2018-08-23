@@ -3,12 +3,29 @@
     <head>
         <meta charset="UTF-8">
         <title>{{ page.title }}</title>
-        <link rel="stylesheet" href="{{ "/assets/style/style.css" | relative_url }}" rel="preload" as="style">
-        <link rel="stylesheet" href="{{ "/assets/style/syntax.css" | relative_url }}" rel="preload" as="style">
     </head>
     <body>
     {% include sidebar.html %}
-        {{ content }}
+    <main>
+    {{ content }}
+    </main>
     {% include footer.html %}
+    <noscript id="deferred-styles">
+        <link rel="stylesheet" href="{{ "/assets/style/style.css" | relative_url }}">
+        <link rel="stylesheet" href="{{ "/assets/style/syntax.css" | relative_url }}">
+    </noscript>
+    <script>
+        var loadDeferredStyles = function() {
+            var addStylesNode = document.getElementById("deferred-styles");
+            var replacement = document.createElement("div");
+            replacement.innerHTML = addStylesNode.textContent;
+            document.body.appendChild(replacement);
+            addStylesNode.parentElement.removeChild(addStylesNode);
+        };
+        var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+        if (raf) raf(function() { window.setTimeout(loadDeferredStyles, 0); });
+        else window.addEventListener('load', loadDeferredStyles);
+    </script>
     </body>
 </html>

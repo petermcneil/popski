@@ -6,9 +6,6 @@ import configparser
 import gzip
 import shutil
 from time import gmtime, strftime
-import logging
-
-logger = logging.getLogger(__name__)
 
 aws = boto3.session.Session(profile_name='popski')
 s3 = aws.resource('s3')
@@ -45,7 +42,7 @@ def backup_website():
     backup_path = strftime("%Y-%m-%d/%H:%M:%S/", gmtime())
 
     for item in main_bucket.objects.all():
-        logger.info("Backing up file: {}".format(item.key))
+        print("Backing up file: {}\n".format(item.key))
         s3.meta.client.copy_object(
             ACL='public-read',
             Bucket=backup_bucket_name,
@@ -72,14 +69,14 @@ def gzip_files():
                 os.makedirs(temp_folder + root.replace(built_website, ""), exist_ok=True)
                 with open(file_path, 'rb') as f_in:
                     with gzip.open(tmp_path, 'wb+') as f_out:
-                        logger.info("G-zipping file {} saving to with the path {}".format(file_path, tmp_path))
+                        print("G-zipping file {} saving to with the path {}\n".format(file_path, tmp_path))
                         shutil.copyfileobj(f_in, f_out)
 
 
 def load_to_s3():
     main_bucket = s3.Bucket(main_bucket_name)
 
-    logger.info("Deleting contents of the bucket {}".format(main_bucket_name))
+    print("Deleting contents of the bucket {}\n".format(main_bucket_name))
     main_bucket.objects.all().delete()
 
     for root, subdirs, files in os.walk(temp_folder):
@@ -92,7 +89,7 @@ def load_to_s3():
                 else:
                     key = file_path.replace(temp_folder, "").replace(".gz", "")
 
-                logger.info("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
+                print("Uploading file {} to s3 with the path {:10s}\n".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
                 content_type = find_content_type(file_path)
 
@@ -105,7 +102,7 @@ def load_to_s3():
 
 
 def invalidate_cloudfront():
-    logger.info("Updating Cloudfront distribution with new index path")
+    print("Updating Cloudfront distribution with new index path\n")
     client = aws.client("cloudfront")
     dist_config = client.get_distribution_config(Id=CLOUDFRONT_ID)
 
@@ -129,7 +126,7 @@ def md5(files):
 
     global index_html
     index_html = "index-{}.html".format(hash_string)
-    logger.info("Setting index filename to {}".format(index_html))
+    print("Setting index filename to {}\n".format(index_html))
 
 
 def main():

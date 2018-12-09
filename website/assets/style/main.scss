@@ -1,0 +1,120 @@
+---
+---
+
+// @import "syntax";
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+
+
+$width: 90vw; 
+$picture: 30vh;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inconsolata', monospace;
+}
+
+.icon {
+  width: 0.9rem;
+  height: auto;
+}
+
+.main {
+  max-width: $width;
+  margin: auto;
+  padding-top: 1rem;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+}
+
+.footer {
+  padding-top: 5vh;
+  padding-bottom: 1vh;
+  max-width: $width;
+  margin: auto;
+  text-align:  center;
+
+  &__icon {
+    height: 1rem;
+    width: auto;
+  }
+}
+
+.cv {
+  &__header {
+    font-size: 1.2rem;
+  }
+
+  &__header::before, &__header::after{
+    content: '';
+    height: 1px;
+    width: $width;
+    margin-bottom: 2px;
+    background: black;
+    display: block;
+    position: absolute;
+  }
+
+  &__section {
+    padding-top: 5%;
+  }
+  
+  &__list {
+    padding-top: 2%;
+    text-align: left;
+  }
+
+  &__list li {
+    padding-top: 1%;
+  }
+}
+
+.intro {
+  &__picture {
+    height: $picture;
+    width: auto;
+    border-radius: $picture / 1.5;
+  }
+  &__header {
+    font-size: 2rem;
+  }
+
+  &__text {
+    font-size: 1.2rem;
+  }
+
+  &__icon {
+    height: 2rem;
+    width: auto;
+  }
+
+  &__links {
+    padding-top: 1vh;
+    bottom: 0px;
+    text-align: center;
+  }
+}
+
+@media only screen  and (min-width : 1224px) {
+  $width: 40vw;
+
+  .main {
+    max-width: $width;
+  }
+
+  .cv {
+    &__header::before, &__header::after{
+      content: '';
+      height: 1px;
+      width: $width;
+      margin-bottom: 2px;
+      background: black;
+      display: block;
+      position: absolute;
+    }
+  }
+}

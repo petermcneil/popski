@@ -1,0 +1,38 @@
+title: Peter McNeil
+description: A website summing up Peter McNeil
+email: webmaster@pop.ski
+url: "https://pop.ski"
+lang: en_GB
+author: Peter McNeil
+
+source: ./website
+destination: ./website/_site
+
+seo:
+  name: Peter McNeil
+  type: Person
+
+sass:
+  style: compressed
+  sass_dir: ./_scss/
+
+plugins:
+  - jekyll-minifier
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+social:
+  name: Peter McNeil
+  links:
+    - https://www.github.com/petermcneil
+    - https://www.linkedin.com/in/peter-mcneil/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+

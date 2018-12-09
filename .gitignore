@@ -106,6 +106,10 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-popski-env
+.vscode
 super_secrets.ini
 tmp/
+
+_site
+.sass-cache
+.jekyll-metadata

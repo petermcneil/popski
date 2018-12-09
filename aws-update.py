@@ -6,11 +6,9 @@ import configparser
 import gzip
 import shutil
 from time import gmtime, strftime
-import coloredlogs
 import logging
 
 logger = logging.getLogger(__name__)
-coloredlogs.install(level='INFO', logger=logger)
 
 aws = boto3.session.Session(profile_name='popski')
 s3 = aws.resource('s3')
@@ -35,7 +33,10 @@ mime_type = {
     "js": "application/javascript",
     "svg": "image/svg+xml",
     "xml": "text/xml",
-    "jpeg": "image/jpeg"
+    "jpeg": "image/jpeg",
+    "jpg": "image/jpeg",
+    "txt": "text/plain",
+    "ico": "image/x-icon"
 }
 
 
@@ -94,8 +95,13 @@ def load_to_s3():
                 logger.info("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
                 content_type = find_content_type(file_path)
-                main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data,
-                                       ContentType=content_type, ContentEncoding="gzip", ACL="public-read")
+
+                if "text/html" not in content_type: 
+                    main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data, 
+                        ContentType=content_type, ContentEncoding="gzip", ACL="public-read")
+                else:
+                    main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data, 
+                        ContentType=content_type, ContentEncoding="gzip", ACL="public-read", CacheControl="max-age=3600")
 
 
 def invalidate_cloudfront():
@@ -114,7 +120,7 @@ def md5(files):
     hash_string = hashlib.md5()
 
     for f in files:
-        with open(built_website + "/" + f) as opened_file:
+        with open(built_website + f) as opened_file:
             data = opened_file.read()
             hash_string.update(data.encode("utf-8"))
 

@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-gem "jekyll", "~> 3.8.3"
+gem "jekyll", "~> 3.8.4"
 gem 'jekyll-minifier', '~> 0.1.6'
 gem 'jekyll-babel'
 gem 'jekyll-sitemap'

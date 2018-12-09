@@ -33,7 +33,8 @@ mime_type = {
     "jpeg": "image/jpeg",
     "jpg": "image/jpeg",
     "txt": "text/plain",
-    "ico": "image/x-icon"
+    "ico": "image/x-icon",
+    "webp": "image/webp"
 }
 
 

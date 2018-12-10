@@ -8,6 +8,7 @@
   --background: white;
   --width: 90vw;
   --picture: 250px;
+  --footer: 50px;
 }
 
 
@@ -49,6 +50,9 @@
 /////////////////////////////////////////
 ///////       Elements            ///////
 /////////////////////////////////////////
+html, body{
+  height: 100vh;
+}
 img {
   -khtml-user-select: none;
   -o-user-select: none;
@@ -76,6 +80,7 @@ ul {
 }
 
 .main {
+  min-height: calc(100vh - var(--footer));
   max-width: var(--width);
   margin: auto;
   padding-top: 1rem;
@@ -83,8 +88,7 @@ ul {
 }
 
 .footer {
-  padding-top: 5vh;
-  padding-bottom: 1vh;
+  height: var(--footer);
   max-width: var(--width);
   margin: auto;
   text-align:  center;
@@ -119,9 +123,11 @@ ul {
     text-align: left;
   }
 
-  &__list li {
+  &__list li,
+  &__paragraph{
     padding-top: 1%;
   }
+
 }
 
 .intro {

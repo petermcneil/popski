@@ -88,7 +88,7 @@ ul {
   min-height: calc(100vh - var(--footer));
   max-width: var(--width);
   margin: auto;
-  padding-top: 2rem;
+  padding-top: 1rem;
   text-align: center;
 }
 
@@ -154,7 +154,6 @@ ul {
     border-right-style: solid;
     text-align: left;
 
-
     li {
       padding-top: 3%;
     }
@@ -218,7 +217,7 @@ ul {
   position: relative;
   display: inline-block;
   width: 30px;
-  height: 17px;
+  height: 15px;
 
   input {
     opacity: 0;
@@ -275,11 +274,6 @@ ul {
 /////////////////////////////////////////
 ///////          IDs              ///////
 /////////////////////////////////////////
-#mode__toggle {
-  max-width: var(--width);
-  margin: auto;
-  text-align: center;
-}
 
 /////////////////////////////////////////
 ///////       Media Qs            ///////

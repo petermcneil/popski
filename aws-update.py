@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import boto3.session
 import hashlib
 import os
@@ -43,7 +44,7 @@ def backup_website():
     backup_path = strftime("%Y-%m-%d/%H:%M:%S/", gmtime())
 
     for item in main_bucket.objects.all():
-        print("Backing up file: {}\n".format(item.key))
+        print("Backing up file: {}".format(item.key))
         s3.meta.client.copy_object(
             ACL='public-read',
             Bucket=backup_bucket_name,
@@ -60,7 +61,7 @@ def find_content_type(path):
 def gzip_files():
     os.makedirs(temp_folder, exist_ok=True)
 
-    for root, subdirs, files in os.walk(built_website):
+    for root, _, files in os.walk(built_website):
         for filename in files:
             if filename not in excluded:
                 file_path = os.path.join(root, filename)
@@ -70,17 +71,17 @@ def gzip_files():
                 os.makedirs(temp_folder + root.replace(built_website, ""), exist_ok=True)
                 with open(file_path, 'rb') as f_in:
                     with gzip.open(tmp_path, 'wb+') as f_out:
-                        print("G-zipping file {} saving to with the path {}\n".format(file_path, tmp_path))
+                        print("G-zipping file {} saving to with the path {}".format(file_path, tmp_path))
                         shutil.copyfileobj(f_in, f_out)
 
 
 def load_to_s3():
     main_bucket = s3.Bucket(main_bucket_name)
 
-    print("Deleting contents of the bucket {}\n".format(main_bucket_name))
+    print("Deleting contents of the bucket {}".format(main_bucket_name))
     main_bucket.objects.all().delete()
 
-    for root, subdirs, files in os.walk(temp_folder):
+    for root, _, files in os.walk(temp_folder):
         for filename in files:
             if filename not in excluded:
                 file_path = os.path.join(root, filename)
@@ -90,7 +91,7 @@ def load_to_s3():
                 else:
                     key = file_path.replace(temp_folder, "").replace(".gz", "")
 
-                print("Uploading file {} to s3 with the path {:10s}\n".format(file_path.replace(temp_folder, ""), key))
+                print("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
                 content_type = find_content_type(file_path)
 
@@ -103,7 +104,7 @@ def load_to_s3():
 
 
 def invalidate_cloudfront():
-    print("Updating Cloudfront distribution with new index path\n")
+    print("Updating Cloudfront distribution with new index path")
     client = aws.client("cloudfront")
     dist_config = client.get_distribution_config(Id=CLOUDFRONT_ID)
 
@@ -127,7 +128,7 @@ def md5(files):
 
     global index_html
     index_html = "index-{}.html".format(hash_string)
-    print("Setting index filename to {}\n".format(index_html))
+    print("Setting index filename to {}".format(index_html))
 
 
 def main():

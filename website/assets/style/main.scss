@@ -1,10 +1,19 @@
 ---
 ---
-$width: 90vw; 
-$picture: 250px;
-/*
-Google Fonts file for Inconsolata
-*/
+/////////////////////////////////////////
+///////       Variables           ///////
+/////////////////////////////////////////
+:root {
+  --text: black; 
+  --background: white;
+  --width: 90vw;
+  --picture: 250px;
+}
+
+
+/////////////////////////////////////////
+///////       Fonts               ///////
+/////////////////////////////////////////
 @font-face {
   font-family: 'Inconsolata';
   font-style: normal;
@@ -34,26 +43,46 @@ Google Fonts file for Inconsolata
   font-family: 'Inconsolata', monospace;
 }
 
-.icon {
-  width: 0.9rem;
-  height: auto;
-}
-
-.main {
-  max-width: $width;
-  margin: auto;
-  padding-top: 1rem;
-  text-align: center;
+/////////////////////////////////////////
+///////       Elements            ///////
+/////////////////////////////////////////
+img {
+  -khtml-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 ul {
   list-style: none;
 }
 
+/////////////////////////////////////////
+///////       Classes             ///////
+/////////////////////////////////////////
+
+.mode {
+  color: var(--text);
+  background: var(--background);
+}
+
+.icon {
+  width: 0.9rem;
+  height: auto;
+}
+
+.main {
+  max-width: var(--width);
+  margin: auto;
+  padding-top: 1rem;
+  text-align: center;
+}
+
 .footer {
   padding-top: 5vh;
   padding-bottom: 1vh;
-  max-width: $width;
+  max-width: var(--width);
   margin: auto;
   text-align:  center;
 
@@ -71,10 +100,10 @@ ul {
   &__header::before, &__header::after{
     content: '';
     height: 1px;
-    width: $width;
+    width: var(--width);
     margin-bottom: 2px;
-    background: black;
     display: block;
+    background: var(--text);
     position: absolute;
   }
 
@@ -94,10 +123,11 @@ ul {
 
 .intro {
   &__picture {
-    height: $picture;
+    height: var(--picture);
     width: auto;
-    border-radius: $picture / 1.5;
+    border-radius: calc(var(--picture) / 1.5);
   }
+
   &__header {
     font-size: 2rem;
   }
@@ -118,22 +148,19 @@ ul {
   }
 }
 
+
+/////////////////////////////////////////
+///////       Media Qs            ///////
+/////////////////////////////////////////
 @media only screen  and (min-width : 1224px) {
-  $width: 40vw;
-
-  .main {
-    max-width: $width;
+  :root {
+    --width: 40vw;
   }
+}
 
-  .cv {
-    &__header::before, &__header::after{
-      content: '';
-      height: 1px;
-      width: $width;
-      margin-bottom: 2px;
-      background: black;
-      display: block;
-      position: absolute;
-    }
+@media (prefers-color-scheme: dark) {
+  :root {
+      --background: black;
+      --text: white;
   }
 }

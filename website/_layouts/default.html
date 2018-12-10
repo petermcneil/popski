@@ -7,9 +7,26 @@
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
         <link rel="icon" type="image/x-icon" href="favicon.ico" />
         {% seo %}
+        
+        <script type="application/javascript">
+    function toggle() {
+        var text = document.documentElement.style.getPropertyValue("--text");
+        if (text.includes("black")){
+            document.documentElement.style.setProperty('--text', 'white');  
+            document.documentElement.style.setProperty('--background', 'black');  
+        } else {
+            document.documentElement.style.setProperty('--text', 'black');  
+            document.documentElement.style.setProperty('--background', 'white');  
+        }
+    }
+
+    toggle()
+
+        </script>
     </head>
-    <body>
+    <body class="mode">
     <main class="main">
+        <button onclick="toggle()">Dark Mode</button>
         {{ content }}
     </main>
     {% include footer.html %}

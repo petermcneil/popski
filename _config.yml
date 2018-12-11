@@ -19,6 +19,7 @@ sass:
 jekyll-minifier:
   uglifier_args:
     harmony: true
+
 plugins:
   - jekyll-minifier
   - jekyll-sitemap

@@ -123,7 +123,7 @@ def update_cloudfront():
 
 def files_to_invalidate():
     invalidation = []
-    git_command_1 = "git ls-files --full-name"
+    git_command_1 = "git ls-files --full-name _site"
     git_command_2 = "grep \"$(git diff --name-only HEAD)\""
     p1 = subprocess.Popen(git_command_1, stdout=subprocess.PIPE, shell=True)
     p2 = subprocess.Popen(git_command_2, stdin=p1.stdout, stdout=subprocess.PIPE, shell=True)
@@ -176,7 +176,13 @@ def md5(files):
     print("Setting index filename to {}".format(index_html))
 
 
+def build_website():
+    git_command = "jekyll clean && jekyll build"
+    p1, _ = subprocess.Popen(git_command, stdout=subprocess.PIPE, shell=True).communicate()
+
+
 def main(argsv):
+    build_website()
     backup_website()
     md5(["index.html"])
     gzip_files()
@@ -189,7 +195,7 @@ def main(argsv):
         i_list = files_to_invalidate()
 
         if argsv.f:
-            i_list = "/*"
+            i_list = ["*"]
         invalidate_cloudfront(i_list)
 
 

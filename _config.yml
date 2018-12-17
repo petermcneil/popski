@@ -6,7 +6,7 @@ lang: en_GB
 author: Peter McNeil
 
 source: ./website
-destination: ./website/_site
+destination: ./_site
 
 seo:
   name: Peter McNeil

@@ -7,18 +7,18 @@
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
         <link rel="icon" type="image/x-icon" href="favicon.ico" />
         <!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>Peter McNeil | A website summing up Peter McNeil</title>
+<title>Peter McNeil | Home of Peter McNeil. Part time at BBC News and a final year university student studying Software Engineering.</title>
 <meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="Peter McNeil" />
 <meta name="author" content="Peter McNeil" />
 <meta property="og:locale" content="en_GB" />
-<meta name="description" content="A website summing up Peter McNeil" />
-<meta property="og:description" content="A website summing up Peter McNeil" />
+<meta name="description" content="Home of Peter McNeil. Part time at BBC News and a final year university student studying Software Engineering." />
+<meta property="og:description" content="Home of Peter McNeil. Part time at BBC News and a final year university student studying Software Engineering." />
 <link rel="canonical" href="https://pop.ski/404.html" />
 <meta property="og:url" content="https://pop.ski/404.html" />
 <meta property="og:site_name" content="Peter McNeil" />
 <script type="application/ld+json">
-{"url":"https://pop.ski/404.html","author":{"@type":"Person","name":"Peter McNeil"},"description":"A website summing up Peter McNeil","headline":"Peter McNeil","@type":"WebPage","@context":"http://schema.org"}</script>
+{"url":"https://pop.ski/404.html","author":{"@type":"Person","name":"Peter McNeil"},"description":"Home of Peter McNeil. Part time at BBC News and a final year university student studying Software Engineering.","headline":"Peter McNeil","@type":"WebPage","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     </head>
@@ -46,65 +46,7 @@
     <p class="footer__copyright">&copy; Peter McNeil, 2018 </p>
     <a class="footer__link mode" href="https://github.com/petermcneil/popski">Source code for the website</a>
     <a class="footer__link mode" href="https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt"><p>License for Font Awesome icons</p></a>
-    <script type="application/javascript">
-        function toggle() {
-            if(document.documentElement.style.getPropertyValue('--text').includes("black")){
-                turn("dark");
-            } else {
-                turn("light");
-            }
-        }
-
-        function turn(mode) {
-            if (mode === "light"){
-                document.documentElement.style.setProperty('--text', 'black');
-                document.documentElement.style.setProperty('--background', 'white');
-                document.documentElement.style.setProperty('--links', 'blue');
-                setCookie("light");
-                b.setAttribute("checked", "false");
-            } else {
-                document.documentElement.style.setProperty('--text', 'white');
-                document.documentElement.style.setProperty('--background', 'black');
-                document.documentElement.style.setProperty('--links', 'white');
-                setCookie("dark");
-                b.setAttribute("checked", "true");
-            }
-        }
-
-        function setCookie(mode) {
-            let domain = window.location.hostname;
-            let date = new Date();
-            date.setMonth(date.getMonth() + 12);
-            document.cookie="mode="+ mode + ";expires="+ date + "; path=/; secure;domain=." + domain;
-        }
-
-        function getCookie(c_name) {
-            let c_start, c_end;
-
-            if (document.cookie.length > 0) {
-                c_start = document.cookie.indexOf(c_name + "=");
-                if (c_start !== -1) {
-                    c_start = c_start + c_name.length + 1;
-                    c_end = document.cookie.indexOf(";", c_start);
-                    if (c_end === -1) {
-                        c_end = document.cookie.length;
-                    }
-                    return unescape(document.cookie.substring(c_start, c_end));
-                }
-            }
-            return "";
-        }
-
-        const mode = getCookie("mode");
-        const b = document.getElementById("mode__toggle");
-
-        if (mode === "") {
-            turn("light");
-        } else {
-            turn(mode);
-        }
-
-    </script>
+    <script type="application/javascript" src="/assets/scripts/main.js" async defer></script>
 </footer>
     </body>
 </html>

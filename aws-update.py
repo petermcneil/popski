@@ -7,27 +7,28 @@ import hashlib
 import os
 import shutil
 import subprocess
+import sys
 import time
 from time import gmtime, strftime
+from loguru import logger
 
 import boto3.session
 
+# Paths
 this_file = os.path.abspath(os.path.dirname(__file__))
-config = configparser.ConfigParser()
-config.read(os.path.join(this_file, 'super_secrets.ini'))
-popski = config['pop.ski']
 
-CLOUDFRONT_ID = popski["CLOUDFRONT_ID"]
-main_bucket_name = popski["main_bucket_name"]
-backup_bucket_name = popski["backup_bucket_name"]
+# Config
+CONFIG = configparser.ConfigParser()
+CONFIG.read(os.path.join(this_file, 'super_secrets.ini'))
+POPSKI = CONFIG['pop.ski']
 
-built_website = popski["static_website"]
-temp_folder = popski["temp_folder"]
+# Folder paths
+built_website = POPSKI["static_website"]  # Absolute path to the output of jekyll build
+temp_folder = POPSKI["temp_folder"]  # Absolute path to the temporary directory
 
+# File related constants
 excluded = [".DS_Store", "function.ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]
-
 excluded_ext = [".scssc", ".md"]
-pattern = '%d.%m.%Y %H:%M:%S'
 
 mime_type = {
     "html": "text/html",
@@ -42,22 +43,34 @@ mime_type = {
     "webp": "image/webp"
 }
 
+# AWS
 AWS = boto3.session.Session(profile_name='popski')
+
+# S3
 S3_CLIENT = AWS.client("s3")
 S3 = AWS.resource('s3')
+MAIN_BUCKET_NAME = POPSKI["main_bucket_name"]
+MAIN_BUCKET = S3.Bucket(MAIN_BUCKET_NAME)
+BACKUP_BUCKET_NAME = POPSKI["backup_bucket_name"]
+
+# Cloudfront
+CLOUDFRONT_ID = POPSKI["CLOUDFRONT_ID"]
 CLOUDFRONT = AWS.client("cloudfront")
-main_bucket = S3.Bucket(main_bucket_name)
+
+# Yes/no cmd line options
+yes = {'yes', 'y', 'ye', ''}
+no = {'no', 'n'}
 
 
 def backup_website():
     backup_path = strftime("%Y-%m-%d/%H:%M:%S/", gmtime())
 
-    for item in main_bucket.objects.all():
-        print("Backing up file: {}".format(item.key))
+    for item in MAIN_BUCKET.objects.all():
+        logger.debug("Backing up file: {}".format(item.key))
         S3.meta.client.copy_object(
             ACL='public-read',
-            Bucket=backup_bucket_name,
-            CopySource={'Bucket': main_bucket_name, 'Key': item.key},
+            Bucket=BACKUP_BUCKET_NAME,
+            CopySource={'Bucket': MAIN_BUCKET_NAME, 'Key': item.key},
             Key=backup_path + item.key
         )
 
@@ -80,13 +93,13 @@ def gzip_files():
                 os.makedirs(temp_folder + root.replace(built_website, ""), exist_ok=True)
                 with open(file_path, 'rb') as f_in:
                     with gzip.open(tmp_path, 'wb+') as f_out:
-                        print("G-zipping file {} saving to with the path {}".format(file_path, tmp_path))
+                        logger.debug("G-zipping file {} to {}".format(file_path, tmp_path))
                         shutil.copyfileobj(f_in, f_out)
 
 
 def load_to_s3():
-    print("Deleting contents of the bucket {}".format(main_bucket_name))
-    main_bucket.objects.all().delete()
+    logger.debug("Deleting contents of the bucket {}".format(MAIN_BUCKET_NAME))
+    MAIN_BUCKET.objects.all().delete()
 
     for root, _, files in os.walk(temp_folder):
         for filename in files:
@@ -98,20 +111,16 @@ def load_to_s3():
                 else:
                     key = file_path.replace(temp_folder, "").replace(".gz", "")
 
-                print("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
+                logger.debug("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
-                content_type = find_content_type(file_path)
 
-                if "text/html" not in content_type:
-                    main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data,
-                                           ContentType=content_type, ContentEncoding="gzip", ACL="public-read")
-                else:
-                    main_bucket.put_object(Bucket=main_bucket_name, Key=key, Body=data,
-                                           ContentType=content_type, ContentEncoding="gzip", ACL="public-read", CacheControl="max-age=3600")
+                MAIN_BUCKET.put_object(Bucket=MAIN_BUCKET_NAME, Key=key, Body=data,
+                                       ContentType=find_content_type(file_path), ContentEncoding="gzip",
+                                       ACL="public-read", CacheControl="max-age=3600")
 
 
 def update_cloudfront():
-    print("Updating Cloudfront distribution with new index path")
+    logger.debug("Updating Cloudfront distribution with new index path: {}", index_html)
     dist_config = CLOUDFRONT.get_distribution_config(Id=CLOUDFRONT_ID)
 
     dist_config["DistributionConfig"]["DefaultRootObject"] = index_html
@@ -123,7 +132,7 @@ def update_cloudfront():
 
 def files_to_invalidate():
     invalidation = []
-    git_command_1 = "git ls-files --full-name _site"
+    git_command_1 = "git diff --name-only HEAD _site"
     git_command_2 = "grep \"$(git diff --name-only HEAD)\""
     p1 = subprocess.Popen(git_command_1, stdout=subprocess.PIPE, shell=True)
     p2 = subprocess.Popen(git_command_2, stdin=p1.stdout, stdout=subprocess.PIPE, shell=True)
@@ -134,8 +143,8 @@ def files_to_invalidate():
 
     for file in process.split("\n"):
         ext = file.split(".")[1]
-        if "website" in file and ext not in excluded_ext and file != "website/index.html":
-            file = file.replace("website/", "")
+        if "_site" in file and ext not in excluded_ext:
+            file = file.replace("_site/", "")
 
             if ".scss" in file:
                 file = file.replace(".scss", ".css")
@@ -145,64 +154,83 @@ def files_to_invalidate():
     return invalidation
 
 
+def yes_or_no():
+    choice = input().lower()
+    if choice in yes:
+        return True
+    elif choice in no:
+        return False
+    else:
+        sys.stdout.write("Please respond with 'yes' or 'no'")
+
+
 def invalidate_cloudfront(l):
     if len(l) > 0:
-        print("Invalidating the following paths: {}".format(l))
-        CLOUDFRONT.create_invalidation(
-            DistributionId=CLOUDFRONT_ID,
-            InvalidationBatch={
-                'Paths': {
-                    'Quantity': len(l),
-                    'Items': ['/{}'.format(f) for f in l]
-                },
-                'CallerReference': 'website-updated-{}'.format(datetime.datetime.now())
-            }
-        )
+        logger.info("Invalidation available for the following paths: {}".format(l))
+        sys.stdout.write("Continue with invalidation? y(es)/n(o)\n")
+
+        if yes_or_no():
+            CLOUDFRONT.create_invalidation(
+                DistributionId=CLOUDFRONT_ID,
+                InvalidationBatch={
+                    'Paths': {
+                        'Quantity': len(l),
+                        'Items': ['/{}'.format(f) for f in l]
+                    },
+                    'CallerReference': 'website-updated-{}'.format(datetime.datetime.now())
+                }
+            )
+        else:
+            logger.error("Not invalidating paths")
+    else:
+        logger.error("No files have updated - not invalidating Cloudfront")
 
 
-def md5(files):
+def make_a_hash():
     hash_string = hashlib.md5()
 
-    for f in files:
-        with open(built_website + f) as opened_file:
-            data = opened_file.read()
-            hash_string.update(data.encode("utf-8"))
+    with open(built_website + "index.html") as opened_file:
+        data = opened_file.read()
+        hash_string.update(data.encode("utf-8"))
 
     hash_string.update(str(time.time()).encode("utf-8"))
     hash_string = hash_string.hexdigest()[0:10]
 
     global index_html
     index_html = "index-{}.html".format(hash_string)
-    print("Setting index filename to {}".format(index_html))
+    logger.info("Setting index filename to {}".format(index_html))
 
 
 def build_website():
+    logger.info("Building the website from scratch 🌐")
     git_command = "jekyll clean && jekyll build"
     p1, _ = subprocess.Popen(git_command, stdout=subprocess.PIPE, shell=True).communicate()
 
 
-def main(argsv):
+def main(a):
     build_website()
     backup_website()
-    md5(["index.html"])
+    make_a_hash()
     gzip_files()
     load_to_s3()
     update_cloudfront()
 
     shutil.rmtree(temp_folder)
 
-    if argsv.i:
-        i_list = files_to_invalidate()
-
-        if argsv.f:
+    if a.invalid:
+        if a.force:
             i_list = ["*"]
+        else:
+            i_list = files_to_invalidate()
+
         invalidate_cloudfront(i_list)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', help='Force invalidation of all paths', required=False)
-    parser.add_argument('-i', help='Invalidate all updated objects', required=False, action='store_true')
+    parser.add_argument('-f', help='Force invalidation of all paths', dest="force", required=False, action='store_true')
+    parser.add_argument('-i', help='Invalidate all updated objects', dest="invalid", required=False, action='store_true')
+    parser.set_defaults(force=False, invalid=False)
     args = parser.parse_args()
 
     main(args)

@@ -1,5 +1,5 @@
 title: Peter McNeil
-description: Home of Peter McNeil. Part time at BBC News and a final year university student studying Software Engineering.
+description: Home of Peter McNeil. A part time Software Engineer at BBC News and final year university student at the University of Brighton.
 email: webmaster@pop.ski
 url: "https://pop.ski"
 lang: en_GB
@@ -8,28 +8,34 @@ author: Peter McNeil
 source: ./website
 destination: ./_site
 
+plugins:
+  - jekyll-minifier
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-webp
+
 seo:
   name: Peter McNeil
   type: Person
 
 sass:
-  style: compressed
   sass_dir: ./_scss/
 
 jekyll-minifier:
   uglifier_args:
     harmony: true
 
-plugins:
-  - jekyll-minifier
-  - jekyll-sitemap
-  - jekyll-seo-tag
-
 social:
   name: Peter McNeil
   links:
     - https://www.github.com/petermcneil
     - https://www.linkedin.com/in/peter-mcneil/
+
+webp:
+  enabled: true
+  quality: 90
+  img_dir: ["/assets/images/"]
+  formats: [".jpeg", ".jpg", ".png", ".tiff"]
 
 exclude:
   - Gemfile

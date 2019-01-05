@@ -112,3 +112,6 @@ tmp/
 
 .sass-cache
 .jekyll-metadata
+bundle/
+.bundle/
+Gemfile.lock

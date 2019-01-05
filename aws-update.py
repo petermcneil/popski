@@ -10,9 +10,9 @@ import subprocess
 import sys
 import time
 from time import gmtime, strftime
-from loguru import logger
 
 import boto3.session
+from loguru import logger
 
 # Paths
 this_file = os.path.abspath(os.path.dirname(__file__))
@@ -64,6 +64,15 @@ no = {'no', 'n'}
 
 def backup_website():
     backup_path = strftime("%Y-%m-%d/%H:%M:%S/", gmtime())
+    logger.info("🗄  Archiving old website to path: {}".format(backup_path))
+
+    global previous_index
+    for key in MAIN_BUCKET.objects.filter(Prefix="index-"):
+        first = 0
+        if first is 0:
+            previous_index = key.key
+            first += 1
+            logger.debug("Storing the old root index - {}".format(previous_index))
 
     for item in MAIN_BUCKET.objects.all():
         logger.debug("Backing up file: {}".format(item.key))
@@ -93,25 +102,24 @@ def gzip_files():
                 os.makedirs(temp_folder + root.replace(built_website, ""), exist_ok=True)
                 with open(file_path, 'rb') as f_in:
                     with gzip.open(tmp_path, 'wb+') as f_out:
-                        logger.debug("G-zipping file {} to {}".format(file_path, tmp_path))
+                        logger.debug("🗜  🗂  G-zipping file {} to {} ".format(file_path, tmp_path))
                         shutil.copyfileobj(f_in, f_out)
 
 
 def load_to_s3():
-    logger.debug("Deleting contents of the bucket {}".format(MAIN_BUCKET_NAME))
+    logger.info("💥 Deleting contents of the bucket {}".format(MAIN_BUCKET_NAME))
     MAIN_BUCKET.objects.all().delete()
-
+    logger.info("⬆️  Uploading website to S3")
     for root, _, files in os.walk(temp_folder):
         for filename in files:
             if filename not in excluded:
                 file_path = os.path.join(root, filename)
-
-                if "tmp/index.html.gz" in file_path:
-                    key = index_html
+                if temp_folder + "index.html.gz" in file_path:
+                    key = hashed_index_html
                 else:
                     key = file_path.replace(temp_folder, "").replace(".gz", "")
 
-                logger.debug("Uploading file {} to s3 with the path {:10s}".format(file_path.replace(temp_folder, ""), key))
+                logger.debug("✈️  Uploading file {} to S3 with the path {:10s}️".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
 
                 MAIN_BUCKET.put_object(Bucket=MAIN_BUCKET_NAME, Key=key, Body=data,
@@ -120,10 +128,10 @@ def load_to_s3():
 
 
 def update_cloudfront():
-    logger.debug("Updating Cloudfront distribution with new index path: {}", index_html)
+    logger.info("Updating Cloudfront distribution with new index path: {}", hashed_index_html)
     dist_config = CLOUDFRONT.get_distribution_config(Id=CLOUDFRONT_ID)
 
-    dist_config["DistributionConfig"]["DefaultRootObject"] = index_html
+    dist_config["DistributionConfig"]["DefaultRootObject"] = hashed_index_html
 
     dis_config = dist_config["DistributionConfig"]
     etag = dist_config["ETag"]
@@ -146,6 +154,9 @@ def files_to_invalidate():
         if "_site" in file and ext not in excluded_ext:
             file = file.replace("_site/", "")
 
+            if file is "index.html":
+                file = previous_index
+
             if ".scss" in file:
                 file = file.replace(".scss", ".css")
 
@@ -155,21 +166,25 @@ def files_to_invalidate():
 
 
 def yes_or_no():
-    choice = input().lower()
+    choice = input().lower().strip()
     if choice in yes:
         return True
     elif choice in no:
         return False
     else:
-        sys.stdout.write("Please respond with 'yes' or 'no'")
+        sys.stdout.write("Please respond with 'y(es)' or 'n(o)'")
 
 
 def invalidate_cloudfront(l):
     if len(l) > 0:
-        logger.info("Invalidation available for the following paths: {}".format(l))
+        logger.info("✅ Invalidation available for the following paths:")
+        for path in l:
+            logger.info(path)
+
         sys.stdout.write("Continue with invalidation? y(es)/n(o)\n")
 
         if yes_or_no():
+            logger.info("Invalidating cloudfront")
             CLOUDFRONT.create_invalidation(
                 DistributionId=CLOUDFRONT_ID,
                 InvalidationBatch={
@@ -181,9 +196,9 @@ def invalidate_cloudfront(l):
                 }
             )
         else:
-            logger.error("Not invalidating paths")
+            logger.info("🚫 Not invalidating paths")
     else:
-        logger.error("No files have updated - not invalidating Cloudfront")
+        logger.info("🚫 No files have updated - not invalidating Cloudfront")
 
 
 def make_a_hash():
@@ -196,14 +211,14 @@ def make_a_hash():
     hash_string.update(str(time.time()).encode("utf-8"))
     hash_string = hash_string.hexdigest()[0:10]
 
-    global index_html
-    index_html = "index-{}.html".format(hash_string)
-    logger.info("Setting index filename to {}".format(index_html))
+    global hashed_index_html
+    hashed_index_html = "index-{}.html".format(hash_string)
+    logger.debug("Setting index filename to {}".format(hashed_index_html))
 
 
 def build_website():
-    logger.info("Building the website from scratch 🌐")
-    git_command = "jekyll clean && jekyll build"
+    logger.info("🏗  Building the website from scratch")
+    git_command = "JEKYLL_ENV=production jekyll clean && jekyll build"
     p1, _ = subprocess.Popen(git_command, stdout=subprocess.PIPE, shell=True).communicate()
 
 
@@ -224,13 +239,26 @@ def main(a):
             i_list = files_to_invalidate()
 
         invalidate_cloudfront(i_list)
+    else:
+        logger.info("🚫 No invalidation of Cloudfront")
+
+    logger.info("🎉 Website has been updated - https://pop.ski")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', help='Force invalidation of all paths', dest="force", required=False, action='store_true')
-    parser.add_argument('-i', help='Invalidate all updated objects', dest="invalid", required=False, action='store_true')
+    parser.add_argument('-f', '--force', help='Force invalidation of all paths.', dest="force", required=False, action='store_true')
+    parser.add_argument('-i', '--invalidate',
+                        help='Invalidate all objects of the website that have updated since the last git commit.',
+                        dest="invalid", required=False, action='store_true')
+    parser.add_argument('-d', '--debug', help="Debug output.", dest="debug", required=False, action='store_true')
     parser.set_defaults(force=False, invalid=False)
     args = parser.parse_args()
+
+    logger.remove()
+    if args.debug:
+        logger.add(sys.stdout, level="DEBUG")
+    else:
+        logger.add(sys.stdout, level="INFO")
 
     main(args)

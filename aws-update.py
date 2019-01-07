@@ -24,7 +24,7 @@ POPSKI = CONFIG['pop.ski']
 
 # Folder paths
 built_website = POPSKI["static_website"]  # Absolute path to the output of jekyll build
-temp_folder = POPSKI["temp_folder"]  # Absolute path to the temporary directory
+temp_folder = "/tmp/popski/"  # Absolute path to the temporary directory
 
 # File related constants
 excluded = [".DS_Store", "function.ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]

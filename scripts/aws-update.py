@@ -27,7 +27,7 @@ built_website = POPSKI["static_website"]  # Absolute path to the output of jekyl
 temp_folder = "/tmp/popski/"  # Absolute path to the temporary directory
 
 # File related constants
-excluded = [".DS_Store", "function.ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]
+excluded = [".DS_Store", ".ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]
 excluded_ext = [".scssc", ".md"]
 
 mime_type = {
@@ -218,7 +218,7 @@ def make_a_hash():
 
 def build_website():
     logger.info("🏗  Building the website from scratch")
-    git_command = "JEKYLL_ENV=production jekyll clean && jekyll build"
+    git_command = "JEKYLL_ENV=\"production\" jekyll clean && jekyll build"
     p1, _ = subprocess.Popen(git_command, stdout=subprocess.PIPE, shell=True).communicate()
 
 
@@ -229,8 +229,6 @@ def main(a):
     gzip_files()
     load_to_s3()
     update_cloudfront()
-
-    shutil.rmtree(temp_folder)
 
     if a.invalid:
         if a.force:
@@ -243,6 +241,7 @@ def main(a):
         logger.info("🚫 No invalidation of Cloudfront")
 
     logger.info("🎉 Website has been updated - https://pop.ski")
+    shutil.rmtree(temp_folder)
 
 
 if __name__ == "__main__":

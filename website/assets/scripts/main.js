@@ -1,28 +1,55 @@
-const mode = getCookie("mode");
-const b = document.getElementById("mode__toggle");
-
-function toggle() {
-    if (document.documentElement.style.getPropertyValue('--text').includes("black")) {
-        turn("dark");
-    } else {
-        turn("light");
+class CSSMode {
+    constructor(mode, background, text, links, checked) {
+        this.mode = mode;
+        this.backgroundColour = background;
+        this.textColour = text;
+        this.linkColour = links;
+        this.checked = checked;
     }
 }
 
-function turn(mode) {
-    if (mode === "light") {
-        document.documentElement.style.setProperty('--text', 'black');
-        document.documentElement.style.setProperty('--background', 'white');
-        document.documentElement.style.setProperty('--links', 'blue');
-        setCookie("light");
-        b.checked = false;
-    } else {
-        document.documentElement.style.setProperty('--text', 'white');
-        document.documentElement.style.setProperty('--background', 'black');
-        document.documentElement.style.setProperty('--links', 'white');
-        setCookie("dark");
-        b.checked = true;
+const modeToggle = document.getElementById("mode__toggle");
+
+const themeColour = document.querySelector('meta[name="theme-color"]');
+const msColour = document.querySelector('meta[name="msapplication-navbutton-color"]');
+const appleColour = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+
+const darkMode = new CSSMode("dark", "black", "white", "white", true);
+const lightMode = new CSSMode("light", "white", "black", "blue", false);
+
+function changeMode() {
+    modeToggle.checked = document.documentElement
+        .style
+        .getPropertyValue('--background')
+        .includes(darkMode.backgroundColour);
+
+    toggleMode(modeToggle.checked);
+}
+
+function toggleMode(changeToLightMode) {
+    let setCookie = true;
+    if (typeof changeToLightMode === "string") {
+        changeToLightMode = changeToLightMode === lightMode.mode || changeToLightMode === "";
+        setCookie = false;
     }
+
+    setMode(changeToLightMode ? lightMode : setMode(darkMode), setCookie);
+}
+
+function setMode(mode, setCookieB) {
+    document.documentElement.style.setProperty('--text', mode.textColour);
+    document.documentElement.style.setProperty('--links', mode.linkColour);
+
+    document.documentElement.style.setProperty('--background', mode.backgroundColour);
+
+    themeColour.setAttribute("content", mode.backgroundColour);
+    msColour.setAttribute("content", mode.backgroundColour);
+    appleColour.setAttribute("content", "default");
+
+    if (setCookieB) {
+        setCookie(mode.mode);
+    }
+    modeToggle.checked = mode.checked;
 }
 
 function setCookie(mode) {
@@ -47,8 +74,4 @@ function getCookie(c_name) {
     return "";
 }
 
-if (mode === "") {
-    turn("light");
-} else {
-    turn(mode);
-}
+toggleMode(getCookie("mode"));

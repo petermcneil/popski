@@ -33,7 +33,7 @@ function toggleMode(changeToLightMode) {
         setCookie = false;
     }
 
-    setMode(changeToLightMode ? lightMode : setMode(darkMode), setCookie);
+    setMode(changeToLightMode ? lightMode : darkMode, setCookie);
 }
 
 function setMode(mode, setCookieB) {

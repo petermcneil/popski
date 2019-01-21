@@ -19,7 +19,7 @@ this_file = os.path.abspath(os.path.dirname(__file__))
 
 # Config
 CONFIG = configparser.ConfigParser()
-CONFIG.read(os.path.join(this_file, 'super_secrets.ini'))
+CONFIG.read(os.path.join(this_file, 'popski.ini'))
 POPSKI = CONFIG['pop.ski']
 
 # Folder paths
@@ -29,6 +29,7 @@ temp_folder = "/tmp/popski/"  # Absolute path to the temporary directory
 # File related constants
 excluded = [".DS_Store", ".ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]
 excluded_ext = [".scssc", ".md"]
+dont_remove = POPSKI["dont_remove"].split("|")
 
 mime_type = {
     "html": "text/html",
@@ -125,6 +126,7 @@ def load_to_s3():
                 MAIN_BUCKET.put_object(Bucket=MAIN_BUCKET_NAME, Key=key, Body=data,
                                        ContentType=find_content_type(file_path), ContentEncoding="gzip",
                                        ACL="public-read", CacheControl="max-age=3600")
+                data.close()
 
 
 def update_cloudfront():

@@ -107,7 +107,7 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 .vscode/
-scripts/super_secrets.ini
+scripts/popski.ini
 tmp/
 
 .sass-cache

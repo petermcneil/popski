@@ -1,9 +1,10 @@
 class CSSMode {
-    constructor(mode, background, text, links, checked) {
+    constructor(mode, background, text, links, linkHover, checked) {
         this.mode = mode;
         this.backgroundColour = background;
         this.textColour = text;
         this.linkColour = links;
+        this.linkHover = linkHover;
         this.checked = checked;
     }
 }
@@ -14,8 +15,8 @@ const themeColour = document.querySelector('meta[name="theme-color"]');
 const msColour = document.querySelector('meta[name="msapplication-navbutton-color"]');
 const appleColour = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
 
-const darkMode = new CSSMode("dark", "black", "white", "white", true);
-const lightMode = new CSSMode("light", "white", "black", "blue", false);
+const darkMode = new CSSMode("dark", "black", "white", "white", "gray",true);
+const lightMode = new CSSMode("light", "white", "black", "blue", "#0e64ef",false);
 
 function changeMode() {
     modeToggle.checked = document.documentElement
@@ -39,6 +40,7 @@ function toggleMode(changeToLightMode) {
 function setMode(mode, setCookieB) {
     document.documentElement.style.setProperty('--text', mode.textColour);
     document.documentElement.style.setProperty('--links', mode.linkColour);
+    document.documentElement.style.setProperty('--linkHover', mode.linkHover);
 
     document.documentElement.style.setProperty('--background', mode.backgroundColour);
 

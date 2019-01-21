@@ -10,6 +10,7 @@
   --picture: 250px;
   --footer: 100px;
   --links: blue;
+  --linkHover: blue;
   --slider-c: 13px;
 }
 
@@ -77,6 +78,10 @@ ul {
 .mode {
   color: var(--text);
   background: var(--background);
+
+  a:hover {
+      color: var(--linkHover);
+  }
 }
 
 .icon {
@@ -205,6 +210,7 @@ ul {
     padding-top: 1vh;
     bottom: 0;
     text-align: center;
+
     a {
       text-decoration: none;
     }

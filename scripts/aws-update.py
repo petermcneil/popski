@@ -41,7 +41,8 @@ mime_type = {
     "jpg": "image/jpeg",
     "txt": "text/plain",
     "ico": "image/x-icon",
-    "webp": "image/webp"
+    "webp": "image/webp",
+    "png" : "image/png"
 }
 
 # AWS

@@ -1,0 +1,18 @@
+---
+layout: default
+title: Projects
+favicon: /favicon.ico
+---
+<article style="margin-top: 1rem;">
+    <h1>Projects</h1>
+    {% for post in site.posts %}
+    {% if post.categories.first == "project" %}
+    <section class="projects__section mode">
+        <a class="visit" href="{{ post.url }}">
+            <h2>{{ post.title }}</h2>
+        </a>
+        <p class="projects__section__excerpt mode">{{post.excerpt}}</p>
+    </section>
+    {% endif %}
+    {% endfor %}
+</article>

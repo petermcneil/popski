@@ -10,11 +10,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link href="/assets/style/main.css" rel="stylesheet" type="text/css">
-    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-    <link href="/favicon.ico" rel="icon" type="image/x-icon"/>
+    <link href="{{ page.favicon }}" rel="shortcut icon" type="image/x-icon"/>
+    <link href="{{ page.favicon }}" rel="icon" type="image/x-icon"/>
     {% seo %}
 </head>
 <body class="mode">
+<nav class="navbar">
+    <a class="visit" href="/">Home</a>
+    <a class="visit" href="/projects">Projects</a>
+</nav>
 <main class="main">
     {{ content }}
 </main>

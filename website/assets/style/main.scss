@@ -8,6 +8,7 @@
   --background: white;
   --width: 90vw;
   --picture: 250px;
+  --logo: 200px;
   --footer: 100px;
   --links: blue;
   --linkHover: blue;
@@ -79,8 +80,13 @@ ul {
   color: var(--text);
   background: var(--background);
 
+  &__icon {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+
   a:hover {
-      color: var(--linkHover);
+    color: var(--linkHover);
   }
 }
 
@@ -97,13 +103,24 @@ ul {
   text-align: center;
 }
 
+.navbar {
+  max-width: var(--width);
+  margin: auto;
+  padding-top: 1rem;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
 .footer {
   height: var(--footer);
   max-width: var(--width);
-  margin: auto;
-
   padding-top: 2%;
+  margin: auto auto 1%;
   text-align: center;
+
+  &__link {
+    margin-top: 5%;
+  }
 
   &__icon {
     height: 1rem;
@@ -130,13 +147,23 @@ ul {
   color: var(--links);
 }
 
+.projects {
+  &__section {
+    padding-top: 2rem;
+    text-align: justify;
+
+    &__excerpt {
+
+      margin-top: 1rem;
+    }
+  }
+}
 .project {
   padding-top: 3%;
 
   &__heading {
     font-size: 1.2rem;
   }
-
 
   &__section {
     padding-top: 2%;
@@ -161,6 +188,50 @@ ul {
 
     li {
       padding-top: 3%;
+    }
+  }
+
+  &__page {
+    &__intro {
+      &__tag {
+        display: inline;
+        list-style-position: inside;
+
+        &__container {
+          white-space: nowrap;
+          text-align: justify;
+        }
+
+        &__header {
+          display: inline;
+        }
+      }
+
+      &__logo {
+        height: var(--logo);
+        width: auto;
+      }
+
+      &__header {
+        font-size: 3em;
+      }
+
+      &__github {
+        margin-bottom: 1rem;
+        svg {
+          width: 1.4rem;
+          height: auto;
+        }
+      }
+    }
+
+    &__content {
+      margin-top: 4%;
+      text-align: justify;
+
+      p {
+        margin-top: 2%;
+      }
     }
   }
 }
@@ -215,11 +286,6 @@ ul {
       text-decoration: none;
     }
   }
-}
-
-.mode__icon {
-  width: 0.7rem;
-  height: 0.7rem;
 }
 
 .switch {

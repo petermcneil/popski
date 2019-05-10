@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from time import gmtime, strftime
+from datetime import datetime, timedelta
 
 import boto3.session
 from loguru import logger
@@ -42,7 +43,8 @@ mime_type = {
     "txt": "text/plain",
     "ico": "image/x-icon",
     "webp": "image/webp",
-    "png" : "image/png"
+    "png" : "image/png",
+    "mp3": "audio/mpeg"
 }
 
 # AWS
@@ -62,6 +64,11 @@ CLOUDFRONT = AWS.client("cloudfront")
 # Yes/no cmd line options
 yes = {'yes', 'y', 'ye', ''}
 no = {'no', 'n'}
+
+# Headers
+expires = datetime.utcnow() + timedelta(days=(25 * 365))
+expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+cache_control = "max-age=86400"
 
 
 def backup_website():
@@ -126,7 +133,7 @@ def load_to_s3():
 
                 MAIN_BUCKET.put_object(Bucket=MAIN_BUCKET_NAME, Key=key, Body=data,
                                        ContentType=find_content_type(file_path), ContentEncoding="gzip",
-                                       ACL="public-read", CacheControl="max-age=3600")
+                                       ACL="public-read", CacheControl=cache_control, Expires=expires)
                 data.close()
 
 

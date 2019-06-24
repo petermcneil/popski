@@ -29,32 +29,34 @@ seo:
 </div>
 <article class="project">
     <header class="project__heading mode">Projects</header>
+    {% for post in site.posts %}
+    {% if post.categories.first == "project" %}
     <section class="project__section">
-        <a href="projects/lodge/" class="project__header visit">Lodge</a>
+        <a href="{{post.permalink}}" class="project__header visit">{{ post.title }}</a>
         <ul class="project__list">
-            <li class="project__description">Final year project aiming to combine steganography, videos, and subtitles.</li>
-            <li class="project__language">C++</li>
-            <li class="project__frameworks">Qt, FFMPEG, CMake.</li>
-        </ul>
-    </section>
-    <section class="project__section">
-        <a href="projects/drop/" class="project__header visit" target="_blank">Drop</a>
-        <ul class="project__list">
-            <li class="project__description">An Android app that enables anyone to "drop" a quick message or note in the real world.</li>
-            <li class="project__language">Kotlin</li>
-            <li class="project__frameworks">AndroidX, Firebase, Google Maps, Gradle</li>
-        </ul>
-    </section>
-    <section class="project__section">
-        <a href="https://www.github.com/petermcneil/musiclibrary" class="project__header visit" target="_blank">Music Library</a>
-        <ul class="project__list">
-            <li class="project__description">A music library API/service that allowed curation of a home music library. Completed as a starter project
-                <a class="visit" href="https://www.github.com/BBC-News">@BBC News</a>.
+            <li class="project__description">{{ post.description }}</li>
+            <li class="project__language">
+                {% for lang in post.language %}
+                    {% if lang == post.language.last %}
+                        {{ lang }}
+                    {% else %}
+                        {{ lang }},
+                    {% endif %}
+                {% endfor %}
             </li>
-            <li class="project__language">Java</li>
-            <li class="project__frameworks">Spring Boot, Gradle, Thymeleaf, JUnit, Postgres, Bootstrap.</li>
+            <li class="project__frameworks">
+                {% for tool in post.tools %}
+                    {% if tool == post.tools.last %}
+                        {{ tool }}
+                    {% else %}
+                        {{ tool }},
+                    {% endif %}
+                {% endfor %}
+            </li>
         </ul>
     </section>
+    {% endif %}
+    {% endfor %}
 </article>
 <article class="cv">
     <section class="cv__section">

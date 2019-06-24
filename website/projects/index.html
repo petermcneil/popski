@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Projects
+description: Project page for Peter McNeil.
 favicon: /favicon.ico
 ---
 <article style="margin-top: 1rem;">
@@ -9,7 +10,7 @@ favicon: /favicon.ico
     {% if post.categories.first == "project" %}
     <section class="projects__section mode">
         <a class="visit" href="{{ post.url }}">
-            <h2>{{ post.title }}</h2>
+            <h2>{{post.emoji}} {{ post.title }}</h2>
         </a>
         <p class="projects__section__excerpt mode">{{post.excerpt}}</p>
     </section>

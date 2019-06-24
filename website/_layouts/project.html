@@ -24,9 +24,16 @@ layout: default
     {% endif %}
 
     <div class="project__page__intro__tag__container">
-        <p class="project__page__intro__tag__header">Tags:</p>
-        {% for tag in page.tags %}
+        <p class="project__page__intro__tag__header">Language:</p>
+        {% for tag in page.language %}
         <p class="project__page__intro__tag">{{ tag }}</p>
+        {% endfor %}
+    </div>
+
+    <div class="project__page__intro__tag__container">
+        <p class="project__page__intro__tag__header">Tools:</p>
+        {% for tool in page.tools %}
+        <p class="project__page__intro__tag">{{ tool }}</p>
         {% endfor %}
     </div>
 

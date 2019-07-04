@@ -12,9 +12,9 @@
     <link href="/assets/style/main.css" rel="stylesheet" type="text/css">
     <link href="/assets/images/lodge_favicon.ico" rel="shortcut icon" type="image/x-icon"/>
     <link href="/assets/images/lodge_favicon.ico" rel="icon" type="image/x-icon"/>
-    <!-- Begin Jekyll SEO tag v2.5.0 -->
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
 <title>Lodge</title>
-<meta name="generator" content="Jekyll v3.8.5" />
+<meta name="generator" content="Jekyll v3.8.6" />
 <meta property="og:title" content="Lodge" />
 <meta name="author" content="Peter McNeil" />
 <meta property="og:locale" content="en_GB" />
@@ -25,7 +25,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-02-06T00:00:00+00:00" />
 <script type="application/ld+json">
-{"url":"https://pop.ski/projects/lodge/","headline":"Lodge","dateModified":"2019-02-06T00:00:00+00:00","datePublished":"2019-02-06T00:00:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pop.ski/projects/lodge/"},"author":{"@type":"Person","name":"Peter McNeil"},"description":"A novel application of steganography to embed subtitles into video frames for later extraction and display.","@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"description":"A novel application of steganography to embed subtitles into video frames for later extraction and display.","@type":"BlogPosting","url":"https://pop.ski/projects/lodge/","headline":"Lodge","dateModified":"2019-02-06T00:00:00+00:00","datePublished":"2019-02-06T00:00:00+00:00","author":{"@type":"Person","name":"Peter McNeil"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://pop.ski/projects/lodge/"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -75,13 +75,20 @@
 
 </div>
 <article class="project__page__content">
-    <p>Traditionally video and subtitle files have been separated; requiring distributing many files to play a video with subtitles or for the video editor to burn the subtitles into the video frame. This project, Lodge, aims to fix this by using steganography in a novel way to hide the subtitles inside individual video frames.</p>
+    <p>As part of my university course I undertook a project titled “A​n investigation into the use of video steganography in the distribution of subtitles​”.
+Below is the TL;DR version of the full dissertation, which can be found at <a href="/assets/final-year-project.pdf">pop.ski/assets/final-year-project.pdf</a>.</p>
 
-<p>Lodge will consist of two software products for dealing with subtitling in videos. One program (Lodge Encoder) will be used by video editors or stenographers and will merge the subtitles into the video file. The other program (Lodge Viewer) will be used by the layperson while watching videos and will extract the subtitles from the video file and display them to the user. The two products to-gether will provide a complete end-to-end workflow for subtitling.</p>
+<p>Steganography is the art of hiding information in plain sight, such as invisible ink or text hidden inside images. This can also be applied to the digital space and data can be hidden inside an image. Steganography has typically been applied in academic use or as a means for covertly transferring data. However, I thought that this interesting technology could be applied elsewhere.</p>
 
-<p>In addition to the Encoder and Viewer, Lodge will deliver a data format specifi-cation. This specification will detail how the subtitles are merged with the video files, with the hope that other implementations could be made from the open source specification.</p>
+<p>Subtitling for videos seemed to be the natural target. It is a fragmented space with many different subtitle formats combining with many different video formats which support subtitles to varying degrees. Subtitles could be “burnt” onto the image, however this doesn’t provide the option to turn them off for the user. The idea of the project was to provide one solution for adding subtitles to video files, no matter the format of either, by using video steganography.</p>
 
-<p>Simply put the goal of this project is to combine subtitles and video into the same file, without being burned into the video itself.</p>
+<p>There were two separate but similar methods used; least significant bit steganography (LSB) on raw, uncompressed video and modification of the motion vector values on compressed h.264 video. LSB worked well with raw video and I was able to add subtitles to any video format with uncompressed video. However I ran into trouble implementing the compressed video algorithm.</p>
+
+<p>My first attempt tried to “trick” the H264 encoder to believe that the data was important for a block of pixels, which would then be encoded to be restored later. Unfortunately after a frustrating week or two, it became clear this method would not work. Moving on to the second attempt required the modification of the underlying H.264 codec to hide the data in the inter-frame optimisation stage, specifically the motion vectors. This required diving through the code of the decoder in libav/FFmpeg, to find a valid place to inject the motion vector algorithm.</p>
+
+<p>Due to time constraints on the project I was unable to complete this feature. Additionally a major problem with the implementation is the fact that the underlying codec had to be altered, which limits the distribution of subtitles to clients with the subtitle decoder. This greatly hinders adoption and the potential of the product. Ultimately this means the investigation failed, but I learnt a lot throughout the process.</p>
+
+<p>I learnt a great deal during this project, not only from a project management standpoint, but gained a deeper understanding of software development practices and processes such as Software Architecture design and setting up a reliable software project. I also developed deep knowledge around video coding concepts and techniques, and delved into a big open source project. Working in C++ was new to me, as was working with Qt and FFmpeg, by the end of the project I was confident in using them and could work efficiently with them.</p>
 
 </article>
 

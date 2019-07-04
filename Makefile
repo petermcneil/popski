@@ -1,5 +1,11 @@
-upload:
-	scripts/aws-update.py ${args}
+.PHONY: clean upload serve
 
-serve:
+upload: clean
+	scripts/aws-update.py -d
+
+serve: clean
 	JEKYLL_ENV="dev" jekyll serve
+
+clean:
+	rm -rf _site
+	rm -rf /tmp/popski

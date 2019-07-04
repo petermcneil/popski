@@ -1,7 +1,6 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 import argparse
 import configparser
-import datetime
 import gzip
 import hashlib
 import os
@@ -28,7 +27,7 @@ built_website = POPSKI["static_website"]  # Absolute path to the output of jekyl
 temp_folder = "/tmp/popski/"  # Absolute path to the temporary directory
 
 # File related constants
-excluded = [".DS_Store", ".ts", "feed.xml", ".sass-cache", ".scssc", ".scss"]
+excluded = [".DS_Store", ".ts", "feed.xml", ".sass-cache", ".scssc", ".scss", ".md"]
 excluded_ext = [".scssc", ".md"]
 dont_remove = POPSKI["dont_remove"].split("|")
 
@@ -44,7 +43,8 @@ mime_type = {
     "ico": "image/x-icon",
     "webp": "image/webp",
     "png" : "image/png",
-    "mp3": "audio/mpeg"
+    "mp3": "audio/mpeg",
+    "pdf": "application/pdf"
 }
 
 # AWS
@@ -84,7 +84,7 @@ def backup_website():
             logger.debug("Storing the old root index - {}".format(previous_index))
 
     for item in MAIN_BUCKET.objects.all():
-        logger.debug("Backing up file: {}".format(item.key))
+        logger.debug("Backing up file: {} to bucket {}".format(item.key, BACKUP_BUCKET_NAME))
         S3.meta.client.copy_object(
             ACL='public-read',
             Bucket=BACKUP_BUCKET_NAME,
@@ -202,7 +202,7 @@ def invalidate_cloudfront(l):
                         'Quantity': len(l),
                         'Items': ['/{}'.format(f) for f in l]
                     },
-                    'CallerReference': 'website-updated-{}'.format(datetime.datetime.now())
+                    'CallerReference': 'website-updated-{}'.format(datetime.now())
                 }
             )
         else:

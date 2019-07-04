@@ -115,3 +115,4 @@ tmp/
 bundle/
 .bundle/
 images/
+venv

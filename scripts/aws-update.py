@@ -1,5 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 import argparse
+import boto3.session
 import configparser
 import gzip
 import hashlib
@@ -8,11 +9,9 @@ import shutil
 import subprocess
 import sys
 import time
-from time import gmtime, strftime
 from datetime import datetime, timedelta
-
-import boto3.session
 from loguru import logger
+from time import gmtime, strftime
 
 # Paths
 this_file = os.path.abspath(os.path.dirname(__file__))
@@ -42,7 +41,7 @@ mime_type = {
     "txt": "text/plain",
     "ico": "image/x-icon",
     "webp": "image/webp",
-    "png" : "image/png",
+    "png": "image/png",
     "mp3": "audio/mpeg",
     "pdf": "application/pdf"
 }
@@ -77,16 +76,14 @@ def backup_website():
 
     global previous_index
     for key in MAIN_BUCKET.objects.filter(Prefix="index-"):
-        first = 0
-        if first is 0:
-            previous_index = key.key
-            first += 1
-            logger.debug("Storing the old root index - {}".format(previous_index))
+        previous_index = key.key
+        logger.debug("Storing the old root index - {}".format(previous_index))
+        break
 
     for item in MAIN_BUCKET.objects.all():
-        logger.debug("Backing up file: {} to bucket {}".format(item.key, BACKUP_BUCKET_NAME))
+        logger.debug("Backing up file: {} to bucket {} at {}".format(item.key, BACKUP_BUCKET_NAME, backup_path + item.key))
         S3.meta.client.copy_object(
-            ACL='public-read',
+            ACL='private',
             Bucket=BACKUP_BUCKET_NAME,
             CopySource={'Bucket': MAIN_BUCKET_NAME, 'Key': item.key},
             Key=backup_path + item.key
@@ -128,7 +125,8 @@ def load_to_s3():
                 else:
                     key = file_path.replace(temp_folder, "").replace(".gz", "")
 
-                logger.debug("✈️  Uploading file {} to S3 with the path {:10s}️".format(file_path.replace(temp_folder, ""), key))
+                logger.debug(
+                    "✈️  Uploading file {} to S3 with the path {:10s}️".format(file_path.replace(temp_folder, ""), key))
                 data = open(file_path, "rb")
 
                 MAIN_BUCKET.put_object(Bucket=MAIN_BUCKET_NAME, Key=key, Body=data,
@@ -164,7 +162,7 @@ def files_to_invalidate():
         if "_site" in file and ext not in excluded_ext:
             file = file.replace("_site/", "")
 
-            if file is "index.html":
+            if file == "index.html":
                 file = previous_index
 
             if ".scss" in file:
@@ -256,7 +254,8 @@ def main(a):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--force', help='Force invalidation of all paths.', dest="force", required=False, action='store_true')
+    parser.add_argument('-f', '--force', help='Force invalidation of all paths.', dest="force", required=False,
+                        action='store_true')
     parser.add_argument('-i', '--invalidate',
                         help='Invalidate all objects of the website that have updated since the last git commit.',
                         dest="invalid", required=False, action='store_true')

@@ -116,3 +116,5 @@ bundle/
 .bundle/
 images/
 venv
+
+.jekyll-cache

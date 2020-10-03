@@ -11,3 +11,5 @@ favicon: /favicon.ico
 language: [Java]
 tools: [Spring Boot, Gradle, Thymeleaf, JUnit, Postgres, Bootstrap]
 ---
+
+This project was a starter to 

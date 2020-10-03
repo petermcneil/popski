@@ -1,4 +1,4 @@
-.PHONY: clean upload serve
+.PHONY: clean upload serve install
 
 upload: clean
 	scripts/aws-update.py -d
@@ -9,3 +9,7 @@ serve: clean
 clean:
 	rm -rf _site
 	rm -rf /tmp/popski
+
+install:
+	gem install bundler
+	bundler install

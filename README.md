@@ -1,5 +1,6 @@
 Popski
 ---
+![Jekyll site CI](https://github.com/petermcneil/popski/workflows/Jekyll%20site%20CI/badge.svg)
 A personal website written by Peter McNeil - using Jekyll as the static generator
  with S3 as hosting.
 

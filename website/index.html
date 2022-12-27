@@ -2,12 +2,13 @@
 layout: default
 title: Home
 favicon: /favicon.ico
-description: Recent graduate of University of Brighton with a First Class Honours BSc Degree in Software Engineering; with two years industry experience at the BBC.
+description: A software engineer with 5+ years experience across the stack on massive websites and startups.
 seo:
 ---
 <div class="intro">
     <picture>
-        <source alt="Peter McNeil sitting at a table" class="intro__picture" srcset="/assets/images/my_face.webp" type="image/webp">
+        <source alt="Peter McNeil sitting at a table" class="intro__picture" srcset="/assets/images/my_face.webp"
+                type="image/webp">
         <img alt="Peter McNeil sitting at a table" class="intro__picture" src="/assets/images/my_face.jpg">
     </picture>
     <header class="intro__header">Peter McNeil</header>
@@ -28,61 +29,32 @@ seo:
     </section>
 </div>
 <article>
-    <section class="project">
-        <header class="project__heading mode">Projects</header>
-        {% for post in site.posts %}
-        {% if post.categories.first == "project" %}
-        <section class="project__section">
-            <a href="{{post.permalink}}" class="project__header visit">{{ post.title }}</a>
-            <ul class="project__list">
-                <li class="project__description">{{ post.description }}</li>
-                <li class="project__language">
-                    {% for lang in post.language %}
-                    {% if lang == post.language.last %}
-                    {{ lang }}
-                    {% else %}
-                    {{ lang }},
-                    {% endif %}
-                    {% endfor %}
-                </li>
-                <li class="project__frameworks">
-                    {% for tool in post.tools %}
-                    {% if tool == post.tools.last %}
-                    {{ tool }}
-                    {% else %}
-                    {{ tool }},
-                    {% endif %}
-                    {% endfor %}
-                </li>
-            </ul>
-        </section>
-        {% endif %}
-        {% endfor %}
-    </section>
     <section class="cv">
-        <section class="cv__section">
-            <header class="cv__header">Education</header>
-            <ul class="cv__list">
-                <li class="cv__date">September 2015 → July 2019</li>
-                <li class="cv__job">
-                    BSc (Hons) Sandwich Software Engineering - First Class Honours
-                </li>
-                <li class="cv__employer">University of Brighton</li>
-            </ul>
-            <ul class="cv__list">
-                <li class="cv__date">September 2007 → June 2013</li>
-                <li class="cv__job">Maths, Physics, Biology - A Level</li>
-                <li class="cv__employer">Bristol Grammar School</li>
-            </ul>
-        </section>
         <section class="cv__section">
             <header class="cv__header">Work experience</header>
             <ul class="cv__list">
-                <li class="cv__date">August 2019 → Present</li>
+                <li class="cv__date">August 2022 → Present</li>
+                <li class="cv__job">Software Engineer</li>
+                <li class="cv__employer">Sportable</li>
+                <li class="cv__role_desc">Backend team</li>
+            </ul>
+            <ul class="cv__list">
+                <li class="cv__date">January 2022 → August 2022</li>
+                <li class="cv__job">Senior Software Engineer</li>
+                <li class="cv__employer">BBC</li>
+                <li class="cv__role_desc">Lead role in Elections team</li>
+            </ul>
+            <ul class="cv__list">
+                <li class="cv__date">January 2021 → December 2021</li>
                 <li class="cv__job">Software Engineer</li>
                 <li class="cv__employer">BBC</li>
-                <li class="cv__role">BBC</li>
-                <li class="cv__role_desc">BBC</li>
+                <li class="cv__role_desc">Elections</li>
+            </ul>
+            <ul class="cv__list">
+                <li class="cv__date">August 2019 → December 2020</li>
+                <li class="cv__job">Software Engineer</li>
+                <li class="cv__employer">BBC</li>
+                <li class="cv__role_desc">Data Systems team: Ares (News), Midas (Market Data), and Weather</li>
             </ul>
             <ul class="cv__list">
                 <li class="cv__date">September 2018 → August 2019</li>
@@ -101,19 +73,57 @@ seo:
             </ul>
         </section>
         <section class="cv__section">
+            <header class="cv__header">Education</header>
+            <ul class="cv__list">
+                <li class="cv__date">September 2015 → July 2019</li>
+                <li class="cv__job">
+                    BSc (Hons) Sandwich Software Engineering - First Class Honours
+                </li>
+                <li class="cv__employer">University of Brighton</li>
+            </ul>
+            <ul class="cv__list">
+                <li class="cv__date">September 2007 → June 2013</li>
+                <li class="cv__job">Maths, Physics, Biology - A Level</li>
+                <li class="cv__employer">Bristol Grammar School</li>
+            </ul>
+        </section>
+        <section class="project">
+            <header class="project__heading mode">Projects</header>
+            {% for post in site.posts %}
+            {% if post.categories.first == "project" %}
+            <section class="project__section">
+                <a href="{{post.permalink}}" class="project__header visit">{{ post.title }}</a>
+                <ul class="project__list">
+                    <li class="project__description">{{ post.description }}</li>
+                    <li class="project__language">
+                        {% for lang in post.language %}
+                        {% if lang == post.language.last %}
+                        {{ lang }}
+                        {% else %}
+                        {{ lang }},
+                        {% endif %}
+                        {% endfor %}
+                    </li>
+                    <li class="project__frameworks">
+                        {% for tool in post.tools %}
+                        {% if tool == post.tools.last %}
+                        {{ tool }}
+                        {% else %}
+                        {{ tool }},
+                        {% endif %}
+                        {% endfor %}
+                    </li>
+                </ul>
+            </section>
+            {% endif %}
+            {% endfor %}
+        </section>
+        <section class="cv__section">
             <header class="cv__header">Volunteering</header>
             <ul class="cv__list">
                 <li class="cv__date">December 2016 → May 2017</li>
                 <li class="cv__job">PASS Leader</li>
                 <li class="cv__employer">University of Brighton</li>
-            </ul>
-        </section>
-        <section class="cv__section">
-            <header class="cv__header">Interests</header>
-            <ul class="cv__list">
-                <li class="cv__interest">Cooking</li>
-                <li class="cv__interest">Walking</li>
-                <li class="cv__interest">Cycling</li>
             </ul>
         </section>
     </section>
